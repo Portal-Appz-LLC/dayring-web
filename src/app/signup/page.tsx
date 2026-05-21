@@ -16,6 +16,14 @@ export default function SignUpForm() {
 
     const isFormValid = email.length > 0 && password.length > 0 && password === confirmPassword;
 
+    const requirements = {
+        length: password.length >= 8,
+        uppercase: /[A-Z]/.test(password),
+        lowercase: /[a-z]/.test(password),
+        number: /\d/.test(password),
+        special: /[!@#$%^&*()-+]/.test(password)
+    };
+
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         console.log('Email:', email);
@@ -24,7 +32,7 @@ export default function SignUpForm() {
     }
 
     return (
-        <main className="min-h-screen flex items-center justify-center bg-gray-50 px-6">
+        <main className="min-h-screen flex items-center justify-center bg-gray-50 px-6 py-12">
             <div className="w-full max-w-md">
                 <form
                     onSubmit={handleSubmit}
@@ -55,7 +63,7 @@ export default function SignUpForm() {
                             Password
                         </label>
                         <input
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             onFocus={() => setPasswordFocused(true)}
@@ -94,6 +102,24 @@ export default function SignUpForm() {
                                     }`}
                                 >
                                     {passwordStrength.label}
+                                </p>
+                            </div>
+
+                            <div className="mt-3 space-y-1 text-sm">
+                                <p className={requirements.length ? "text-green-500" : "text-red-500"}>
+                                    At least 8 characters
+                                </p>
+                                <p className={requirements.uppercase ? "text-green-500" : "text-red-500"}>
+                                    One uppercase letter
+                                </p>
+                                <p className={requirements.lowercase ? "text-green-500" : "text-red-500"}>
+                                    One lowercase letter
+                                </p>
+                                <p className={requirements.number ? "text-green-500" : "text-red-500"}>
+                                    One number
+                                </p>
+                                <p className={requirements.special ? "text-green-500" : "text-red-500"}>
+                                    One special character
                                 </p>
                             </div>
                         </div>
