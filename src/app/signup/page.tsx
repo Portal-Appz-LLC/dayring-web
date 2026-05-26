@@ -9,6 +9,7 @@ import { GoogleLogin } from '@react-oauth/google';
 import AuthManager from '@/Features/auth/components/auth-loader';
 
 export default function SignUpForm() {
+    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -32,17 +33,28 @@ export default function SignUpForm() {
 
         try {
             setIsLoading(true);
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            console.log('Email:', email);
-            console.log('Password:', password);
 
-
+            await new Promise((resolve) => setTimeout(resolve, 3000));
+            console.log('Form submitted:', { username, email, password });
         }
         catch (error) {
             console.error(error);
             setIsLoading(false);
         }
     }
+
+    async function handleGoogleLoginSuccess(credentialResponse: any) {
+        try {
+            setIsLoading(true);
+            await new Promise((resolve) => setTimeout(resolve, 3000));
+            console.log('Google Login Success:', credentialResponse);
+        }
+        catch (error) {
+            console.error(error);
+            setIsLoading(false);
+        }
+    }
+
 
     if (isLoading) {
         return <AuthManager />;
@@ -61,6 +73,37 @@ export default function SignUpForm() {
                     <p className="text-center text-gray-500 pb-4">
                         Start building your streaks today!
                     </p>
+
+                    <div className="w-full mb-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Username
+                        </label>
+
+                        <div className="relative">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                                @
+                            </span>
+
+                            <input
+                                type="text"
+                                value={username}
+                                onChange={(e) => {
+                                    const value = e.target.value
+                                       .replace(/[^a-zA-Z0-9_-]/g, ''); // Remove spaces and special characters
+
+                                    setUsername(value);
+                                }}
+                                placeholder="Username"
+                                maxLength={20}
+                                minLength={3}
+                                className="w-full px-4 py-4 pl-10 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder-gray-300 shadow-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                            />
+                        </div>
+
+                        <p className="text-sm text-gray-500">
+                            Usernames must be between 3 and 20 characters long and can only contain letters, numbers, underscores, and hyphens.
+                        </p>
+                    </div>
 
                     <div className="w-full">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -179,18 +222,17 @@ export default function SignUpForm() {
                     <div className="flex items-center my-6">
                         <div className="flex-1 h-px bg-gray-200" />
                         <span className="px-4 text-sm text-gray-400">or</span>
-                        <div className="flex-1 h-px bg-gray-200" />a
+                        <div className="flex-1 h-px bg-gray-200" />
                     </div>
 
                     <div className="space-y-3 mt-6">
                          <GoogleLogin
-                            onSuccess={credentialResponse => {
-                                console.log(credentialResponse);
-                            }}
+                            onSuccess={handleGoogleLoginSuccess}
                             onError={() => {
-                                console.log('Login Failed');
+                                console.error('Google Login Failed');
+                                setIsLoading(false);
                             }}
-                            />
+                        />
 
                         <button
                             type="button"
