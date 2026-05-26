@@ -5,6 +5,8 @@ import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
 import { FaApple } from "react-icons/fa";
 import { calculatePasswordStrength } from '@/lib/passwordStrength';
+import { GoogleLogin } from '@react-oauth/google';
+import AuthManager from '@/Features/auth/components/auth-loader';
 
 export default function SignUpForm() {
     const [email, setEmail] = useState('');
@@ -13,6 +15,7 @@ export default function SignUpForm() {
     const passwordStrength = calculatePasswordStrength(password);
     const [passwordFocused, setPasswordFocused] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const isFormValid = email.length > 0 && password.length > 0 && password === confirmPassword;
 
@@ -26,9 +29,23 @@ export default function SignUpForm() {
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-        console.log('Email:', email);
-        console.log('Password:', password);
-        alert('Account created (demo)');
+
+        try {
+            setIsLoading(true);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            console.log('Email:', email);
+            console.log('Password:', password);
+
+
+        }
+        catch (error) {
+            console.error(error);
+            setIsLoading(false);
+        }
+    }
+
+    if (isLoading) {
+        return <AuthManager />;
     }
 
     return (
@@ -166,13 +183,14 @@ export default function SignUpForm() {
                     </div>
 
                     <div className="space-y-3 mt-6">
-                        <button
-                            type="button"
-                            className="w-full flex items-center justify-center gap-3 py-3 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 transition"
-                        >
-                            <FcGoogle size={22} />
-                            <span className="font-medium text-gray-700">Continue with Google</span>
-                        </button>
+                         <GoogleLogin
+                            onSuccess={credentialResponse => {
+                                console.log(credentialResponse);
+                            }}
+                            onError={() => {
+                                console.log('Login Failed');
+                            }}
+                            />
 
                         <button
                             type="button"
